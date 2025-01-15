@@ -311,86 +311,99 @@ return [
         ],
 
         // Sidebar items:
+        // Profile Management
+        ['header' => 'Account Settings'],
         [
-            'type' => 'sidebar-menu-search',
-            'text' => 'search',
+        'text' => 'Edit Profile',
+        'url' => 'profile.edit',
+        'icon' => 'fas fa-fw fa-user',
         ],
+
+        // Assets Management
         [
-            'text' => 'blog',
-            'url' => 'admin/blog',
-            'can' => 'manage-blog',
-        ],
-        [
-            'text' => 'pages',
-            'url' => 'admin/pages',
-            'icon' => 'far fa-fw fa-file',
-            'label' => 4,
-            'label_color' => 'success',
-        ],
-        ['header' => 'account_settings'],
-        [
-            'text' => 'profile',
-            'url' => 'admin/settings',
-            'icon' => 'fas fa-fw fa-user',
-        ],
-        [
-            'text' => 'change_password',
-            'url' => 'admin/settings',
-            'icon' => 'fas fa-fw fa-lock',
-        ],
-        [
-            'text' => 'multilevel',
-            'icon' => 'fas fa-fw fa-share',
-            'submenu' => [
-                [
-                    'text' => 'level_one',
-                    'url' => '#',
-                ],
-                [
-                    'text' => 'level_one',
-                    'url' => '#',
-                    'submenu' => [
-                        [
-                            'text' => 'level_two',
-                            'url' => '#',
-                        ],
-                        [
-                            'text' => 'level_two',
-                            'url' => '#',
-                            'submenu' => [
-                                [
-                                    'text' => 'level_three',
-                                    'url' => '#',
-                                ],
-                                [
-                                    'text' => 'level_three',
-                                    'url' => '#',
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-                [
-                    'text' => 'level_one',
-                    'url' => '#',
-                ],
+        'text' => 'Assets',
+        'icon' => 'fas fa-fw fa-piggy-bank',
+        'submenu' => [
+            [
+                'text' => 'All Assets',
+                'url' => 'assets.index',
+                'icon' => 'far fa-fw fa-list-alt',
+            ],
+            [
+                'text' => 'Add Asset',
+                'url' => 'assets.create',
+                'icon' => 'fas fa-fw fa-plus-circle',
+            ],
+            [
+                'text' => 'Total Value',
+                'url' => 'assets.totalValue', // Dynamic user ID
+                'icon' => 'fas fa-fw fa-chart-bar',
             ],
         ],
-        ['header' => 'labels'],
-        [
-            'text' => 'important',
-            'icon_color' => 'red',
-            'url' => '#',
         ],
+
+        // Liabilities Management
         [
-            'text' => 'warning',
-            'icon_color' => 'yellow',
-            'url' => '#',
+        'text' => 'Liabilities',
+        'icon' => 'fas fa-fw fa-hand-holding-usd',
+        'submenu' => [
+            [
+                'text' => 'All Liabilities',
+                'url' => 'liabilities.index',
+                'icon' => 'far fa-fw fa-list-alt',
+            ],
+            [
+                'text' => 'Add Liability',
+                'url' => 'liabilities.create',
+                'icon' => 'fas fa-fw fa-plus-circle',
+            ],
+            [
+                'text' => 'Total Debt',
+                'url' => 'liabilities.totalDebt', // Dynamic user ID
+                'icon' => 'fas fa-fw fa-chart-bar',
+            ],
         ],
+        ],
+
+        // Transactions Management
         [
-            'text' => 'information',
-            'icon_color' => 'cyan',
-            'url' => '#',
+        'text' => 'Transactions',
+        'icon' => 'fas fa-fw fa-exchange-alt',
+        'submenu' => [
+            [
+                'text' => 'All Transactions',
+                'url' => 'transactions.index',
+                'icon' => 'far fa-fw fa-list-alt',
+            ],
+            [
+                'text' => 'Add Transaction',
+                'url' => 'transactions.create',
+                'icon' => 'fas fa-fw fa-plus-circle',
+            ],
+            [
+                'text' => 'Recent Transactions',
+                'url' => 'transactions.recentTransactions', // Dynamic user ID
+                'icon' => 'fas fa-fw fa-clock',
+            ],
+        ],
+        ],
+
+        // Categories Management
+        [
+        'text' => 'Categories',
+        'icon' => 'fas fa-fw fa-tags',
+        'submenu' => [
+            [
+                'text' => 'All Categories',
+                'url' => 'categories.index',
+                'icon' => 'far fa-fw fa-list-alt',
+            ],
+            [
+                'text' => 'Add Category',
+                'url' => 'categories.create',
+                'icon' => 'fas fa-fw fa-plus-circle',
+            ],
+        ],
         ],
         [
             'text' => 'Help',
