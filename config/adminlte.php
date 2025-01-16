@@ -315,7 +315,7 @@ return [
         ['header' => 'Account Settings'],
         [
         'text' => 'Edit Profile',
-        'url' => 'profile.edit',
+        'route' => 'profile.edit',
         'icon' => 'fas fa-fw fa-user',
         ],
 
@@ -326,17 +326,17 @@ return [
         'submenu' => [
             [
                 'text' => 'All Assets',
-                'url' => 'assets.index',
+                'route' => 'admin-assets.index',
                 'icon' => 'far fa-fw fa-list-alt',
             ],
             [
                 'text' => 'Add Asset',
-                'url' => 'assets.create',
+                'route' => 'admin-assets.create',
                 'icon' => 'fas fa-fw fa-plus-circle',
             ],
             [
                 'text' => 'Total Value',
-                'url' => 'assets.totalValue', // Dynamic user ID
+                'url' => '#', // Dynamic user ID
                 'icon' => 'fas fa-fw fa-chart-bar',
             ],
         ],
@@ -349,17 +349,17 @@ return [
         'submenu' => [
             [
                 'text' => 'All Liabilities',
-                'url' => 'liabilities.index',
+                'route' => 'liabilities.index',
                 'icon' => 'far fa-fw fa-list-alt',
             ],
             [
                 'text' => 'Add Liability',
-                'url' => 'liabilities.create',
+                'route' => 'liabilities.create',
                 'icon' => 'fas fa-fw fa-plus-circle',
             ],
             [
                 'text' => 'Total Debt',
-                'url' => 'liabilities.totalDebt', // Dynamic user ID
+                'url' => '#', // Dynamic user ID
                 'icon' => 'fas fa-fw fa-chart-bar',
             ],
         ],
@@ -372,17 +372,17 @@ return [
         'submenu' => [
             [
                 'text' => 'All Transactions',
-                'url' => 'transactions.index',
+                'route' => 'transactions.index',
                 'icon' => 'far fa-fw fa-list-alt',
             ],
             [
                 'text' => 'Add Transaction',
-                'url' => 'transactions.create',
+                'route' => 'transactions.create',
                 'icon' => 'fas fa-fw fa-plus-circle',
             ],
             [
                 'text' => 'Recent Transactions',
-                'url' => 'transactions.recentTransactions', // Dynamic user ID
+                'url' => '#', // Dynamic user ID
                 'icon' => 'fas fa-fw fa-clock',
             ],
         ],
@@ -395,12 +395,12 @@ return [
         'submenu' => [
             [
                 'text' => 'All Categories',
-                'url' => 'categories.index',
+                'route' => 'categories.index',
                 'icon' => 'far fa-fw fa-list-alt',
             ],
             [
                 'text' => 'Add Category',
-                'url' => 'categories.create',
+                'route' => 'categories.create',
                 'icon' => 'fas fa-fw fa-plus-circle',
             ],
         ],

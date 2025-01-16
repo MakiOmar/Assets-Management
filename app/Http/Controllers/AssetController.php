@@ -10,25 +10,73 @@ class AssetController extends Controller
     public function index(Request $request)
     {
         $assets = Asset::where('user_id', $request->user()->id)->get();
-        return response()->json($assets);
+
+        // XHR Request: Return JSON
+        if ($request->ajax()) {
+            return response()->json(['assets' => $assets]);
+        }
+
+        // HTTP Request: Return View
+        return view('assets.index', compact('assets'));
     }
 
     public function store(Request $request)
     {
-        $request->validate(['name' => 'required', 'value' => 'required|numeric']);
-        Asset::create($request->all());
-        return response()->json(['message' => 'Asset added successfully']);
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'value' => 'required|numeric',
+        ]);
+
+        $asset = Asset::create(array_merge($request->all(), ['user_id' => $request->user()->id]));
+
+        // XHR Request: Return JSON
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Asset added successfully',
+                'asset' => $asset,
+            ]);
+        }
+
+        // HTTP Request: Redirect
+        return redirect()->route('assets.index')->with('success', 'Asset added successfully.');
     }
 
     public function update(Request $request, Asset $asset)
     {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'value' => 'required|numeric',
+        ]);
+
         $asset->update($request->all());
-        return response()->json(['message' => 'Asset updated successfully']);
+
+        // XHR Request: Return JSON
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Asset updated successfully',
+                'asset' => $asset,
+            ]);
+        }
+
+        // HTTP Request: Redirect
+        return redirect()->route('assets.index')->with('success', 'Asset updated successfully.');
     }
 
-    public function destroy(Asset $asset)
+    public function destroy(Request $request, Asset $asset)
     {
         $asset->delete();
-        return response()->json(['message' => 'Asset deleted successfully']);
+
+        // XHR Request: Return JSON
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Asset deleted successfully',
+            ]);
+        }
+
+        // HTTP Request: Redirect
+        return redirect()->route('assets.index')->with('success', 'Asset deleted successfully.');
     }
 }

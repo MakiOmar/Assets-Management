@@ -27,29 +27,65 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    // Profile Routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Asset routes
-    Route::resource('assets', AssetController::class);
-    Route::get('assets/total-value/{userId}', [AssetController::class, 'getTotalValue']);
-    Route::post('assets/{asset}/increase', [AssetController::class, 'increaseValue']);
-    Route::post('assets/{asset}/decrease', [AssetController::class, 'decreaseValue']);
+    Route::prefix('manage')->middleware('auth')->group(function () {
+        Route::resource('assets', AssetController::class)->names([
+            'index' => 'admin-assets.index',
+            'create' => 'admin-assets.create',
+            'store' => 'admin-assets.store',
+            'show' => 'admin-assets.show',
+            'edit' => 'admin-assets.edit',
+            'update' => 'admin-assets.update',
+            'destroy' => 'admin-assets.destroy',
+        ]);
+    
+        Route::get('assets/total-value/{userId}', [AssetController::class, 'getTotalValue'])->name('admin-assets.totalValue');
+        Route::post('assets/{asset}/increase', [AssetController::class, 'increaseValue'])->name('admin-assets.increaseValue');
+        Route::post('assets/{asset}/decrease', [AssetController::class, 'decreaseValue'])->name('admin-assets.decreaseValue');
+    });
+    
+    // Liability Routes
+    Route::resource('liabilities', LiabilityController::class)->names([
+        'index' => 'liabilities.index',
+        'create' => 'liabilities.create',
+        'store' => 'liabilities.store',
+        'show' => 'liabilities.show',
+        'edit' => 'liabilities.edit',
+        'update' => 'liabilities.update',
+        'destroy' => 'liabilities.destroy',
+    ]);
+    Route::get('liabilities/total-debt/{userId}', [LiabilityController::class, 'getTotalDebt'])->name('liabilities.totalDebt');
+    Route::post('liabilities/{liability}/reduce', [LiabilityController::class, 'reduceAmount'])->name('liabilities.reduceAmount');
+    Route::post('liabilities/{liability}/increase', [LiabilityController::class, 'increaseAmount'])->name('liabilities.increaseAmount');
 
-    // Liability routes
-    Route::resource('liabilities', LiabilityController::class);
-    Route::get('liabilities/total-debt/{userId}', [LiabilityController::class, 'getTotalDebt']);
-    Route::post('liabilities/{liability}/reduce', [LiabilityController::class, 'reduceAmount']);
-    Route::post('liabilities/{liability}/increase', [LiabilityController::class, 'increaseAmount']);
+    // Transaction Routes
+    Route::resource('transactions', TransactionController::class)->names([
+        'index' => 'transactions.index',
+        'create' => 'transactions.create',
+        'store' => 'transactions.store',
+        'show' => 'transactions.show',
+        'edit' => 'transactions.edit',
+        'update' => 'transactions.update',
+        'destroy' => 'transactions.destroy',
+    ]);
+    Route::get('transactions/recent/{userId}', [TransactionController::class, 'recentTransactions'])->name('transactions.recent');
 
-    // Transaction routes
-    Route::resource('transactions', TransactionController::class);
-    Route::get('transactions/recent/{userId}', [TransactionController::class, 'recentTransactions']);
-
-    // Category routes
-    Route::resource('categories', CategoryController::class);
-    Route::get('categories/type/{type}', [CategoryController::class, 'getByType']);
+    // Category Routes
+    Route::resource('categories', CategoryController::class)->names([
+        'index' => 'categories.index',
+        'create' => 'categories.create',
+        'store' => 'categories.store',
+        'show' => 'categories.show',
+        'edit' => 'categories.edit',
+        'update' => 'categories.update',
+        'destroy' => 'categories.destroy',
+    ]);
+    Route::get('categories/type/{type}', [CategoryController::class, 'getByType'])->name('categories.getByType');
 });
 
-require __DIR__.'/auth.php';
+
+require __DIR__ . '/auth.php';

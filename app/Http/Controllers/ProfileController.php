@@ -16,6 +16,15 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+        // XHR Request: Return JSON data for the user
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'user' => $request->user(),
+            ]);
+        }
+
+        // HTTP Request: Return view
         return view('profile.edit', [
             'user' => $request->user(),
         ]);
@@ -24,23 +33,35 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(ProfileUpdateRequest $request)
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        $user->fill($request->validated());
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        // Reset email verification if email is changed
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
         }
 
-        $request->user()->save();
+        $user->save();
 
+        // XHR Request: Return JSON response
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Profile updated successfully.',
+                'user' => $user,
+            ]);
+        }
+
+        // HTTP Request: Redirect with status
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
     /**
      * Delete the user's account.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request)
     {
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
@@ -55,6 +76,15 @@ class ProfileController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
+        // XHR Request: Return JSON response
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Account deleted successfully.',
+            ]);
+        }
+
+        // HTTP Request: Redirect to homepage
         return Redirect::to('/');
     }
 }
