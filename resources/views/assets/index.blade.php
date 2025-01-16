@@ -41,7 +41,7 @@
 <!-- Add Asset Modal -->
 <div class="modal fade" id="addAssetModal" tabindex="-1" aria-labelledby="addAssetModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <form id="add-asset-form" method="POST" action="{{ route('admin-assets.store') }}">
+        <form id="add-asset-form" method="POST" action="{{ route('manage-assets.store') }}">
             @csrf
             <div class="modal-content">
                 <div class="modal-header">
@@ -107,78 +107,127 @@
 </div>
 @endsection
 @push('js')
-    <script>
-        jQuery(document).ready(function ($) {
-        // Handle Add Asset Form Submission
-        $('#add-asset-form').on('submit', function(e) {
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    // Handle Add Asset Form Submission
+    const addAssetForm = document.getElementById('add-asset-form');
+    if (addAssetForm) {
+        addAssetForm.addEventListener('submit', function (e) {
             e.preventDefault();
-            const formData = $(this).serialize();
-            $.ajax({
-                url: '{{ route('admin-assets.store') }}',
-                method: 'POST',
-                data: formData,
-                success: function(response) {
-                    alert(response.message);
-                    location.reload(); // Reload assets
-                },
-                error: function(xhr) {
-                    alert('Error: ' + xhr.responseJSON.message);
-                }
-            });
-        });
-
-        // Handle Edit Button Click
-        $('.edit-asset-btn').on('click', function() {
-            const id = $(this).data('id');
-            const name = $(this).data('name');
-            const value = $(this).data('value');
-            const type = $(this).data('type');
-
-            $('#edit-asset-id').val(id);
-            $('#edit-name').val(name);
-            $('#edit-value').val(value);
-            $('#edit-type').val(type);
-
-            $('#edit-asset-form').attr('action', `/manage/assets/${id}`);
-        });
-
-        // Handle Edit Asset Form Submission
-        $('#edit-asset-form').on('submit', function(e) {
-            e.preventDefault();
-            const formData = $(this).serialize();
-            const actionUrl = $(this).attr('action');
-            $.ajax({
-                url: actionUrl,
-                method: 'POST',
-                data: formData,
-                success: function(response) {
-                    alert(response.message);
-                    location.reload(); // Reload assets
-                },
-                error: function(xhr) {
-                    alert('Error: ' + xhr.responseJSON.message);
-                }
-            });
-        });
-
-        // Handle Delete Asset
-        $('.delete-asset-btn').on('click', function() {
-            const id = $(this).data('id');
-            if (confirm('Are you sure you want to delete this asset?')) {
-                $.ajax({
-                    url: `/manage/assets/${id}`,
-                    method: 'DELETE',
-                    data: { _token: '{{ csrf_token() }}' },
-                    success: function(response) {
-                        alert(response.message);
-                        $(`#asset-row-${id}`).remove(); // Remove row from table
-                    },
-                    error: function(xhr) {
-                        alert('Error: ' + xhr.responseJSON.message);
-                    }
+            const formData = new FormData(addAssetForm);
+            
+            axios.post('{{ route('manage-assets.store') }}', formData)
+                .then(response => {
+                    Swal.fire({
+                        title: 'Success',
+                        text: response.data.message,
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        location.reload(); // Reload assets
+                    });
+                })
+                .catch(error => {
+                    Swal.fire({
+                        title: 'Error',
+                        text: error.response.data.message,
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
                 });
-            }
         });
+    }
+
+    // Handle Edit Button Click
+    const editAssetButtons = document.querySelectorAll('.edit-asset-btn');
+    editAssetButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const id = button.dataset.id;
+            const name = button.dataset.name;
+            const value = button.dataset.value;
+            const type = button.dataset.type;
+
+            document.getElementById('edit-asset-id').value = id;
+            document.getElementById('edit-name').value = name;
+            document.getElementById('edit-value').value = value;
+            document.getElementById('edit-type').value = type;
+
+            document.getElementById('edit-asset-form').setAttribute('action', `/manage/assets/${id}`);
         });
-    </script>
+    });
+
+    // Handle Edit Asset Form Submission
+    const editAssetForm = document.getElementById('edit-asset-form');
+    if (editAssetForm) {
+        editAssetForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData(editAssetForm);
+            const actionUrl = editAssetForm.getAttribute('action');
+
+            axios.post(actionUrl, formData)
+                .then(response => {
+                    Swal.fire({
+                        title: 'Success',
+                        text: response.data.message,
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        location.reload(); // Reload assets
+                    });
+                })
+                .catch(error => {
+                    Swal.fire({
+                        title: 'Error',
+                        text: error.response.data.message,
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                });
+        });
+    }
+
+    // Handle Delete Asset
+    const deleteAssetButtons = document.querySelectorAll('.delete-asset-btn');
+    deleteAssetButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const id = button.dataset.id;
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You won’t be able to revert this!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    axios.delete(`/manage/assets/${id}`, {
+                        data: { _token: '{{ csrf_token() }}' }
+                    })
+                        .then(response => {
+                            Swal.fire({
+                                title: 'Deleted!',
+                                text: response.data.message,
+                                icon: 'success',
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                const assetRow = document.getElementById(`asset-row-${id}`);
+                                if (assetRow) assetRow.remove(); // Remove row from table
+                            });
+                        })
+                        .catch(error => {
+                            Swal.fire({
+                                title: 'Error',
+                                text: error.response.data.message,
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        });
+                }
+            });
+        });
+    });
+});
+
+</script>
+
 @endpush
