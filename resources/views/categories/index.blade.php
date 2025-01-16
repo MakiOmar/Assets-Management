@@ -104,72 +104,107 @@
 
 <script>
     // Handle Add Category Form Submission
-    $('#add-category-form').on('submit', function(e) {
+    document.getElementById('add-category-form').addEventListener('submit', function (e) {
         e.preventDefault();
-        const formData = $(this).serialize();
-        $.ajax({
-            url: '{{ route('categories.store') }}',
-            method: 'POST',
-            data: formData,
-            success: function(response) {
-                alert(response.message);
-                location.reload(); // Reload categories
-            },
-            error: function(xhr) {
-                alert('Error: ' + xhr.responseJSON.message);
-            }
-        });
+        const formData = new FormData(this);
+
+        axios.post('{{ route('categories.store') }}', formData)
+            .then(response => {
+                Swal.fire({
+                    title: 'Success',
+                    text: response.data.message,
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => location.reload()); // Reload categories
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: 'Error',
+                    text: error.response.data.message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            });
     });
 
     // Handle Edit Button Click
-    $('.edit-category-btn').on('click', function() {
-        const id = $(this).data('id');
-        const name = $(this).data('name');
-        const type = $(this).data('type');
+    document.querySelectorAll('.edit-category-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const id = button.dataset.id;
+            const name = button.dataset.name;
+            const type = button.dataset.type;
 
-        $('#edit-category-id').val(id);
-        $('#edit-name').val(name);
-        $('#edit-type').val(type);
+            document.getElementById('edit-category-id').value = id;
+            document.getElementById('edit-name').value = name;
+            document.getElementById('edit-type').value = type;
 
-        $('#edit-category-form').attr('action', `/categories/${id}`);
-    });
-
-    // Handle Edit Category Form Submission
-    $('#edit-category-form').on('submit', function(e) {
-        e.preventDefault();
-        const formData = $(this).serialize();
-        const actionUrl = $(this).attr('action');
-        $.ajax({
-            url: actionUrl,
-            method: 'POST',
-            data: formData,
-            success: function(response) {
-                alert(response.message);
-                location.reload(); // Reload categories
-            },
-            error: function(xhr) {
-                alert('Error: ' + xhr.responseJSON.message);
-            }
+            document.getElementById('edit-category-form').setAttribute('action', `/categories/${id}`);
         });
     });
 
+    // Handle Edit Category Form Submission
+    document.getElementById('edit-category-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const actionUrl = this.getAttribute('action');
+
+        axios.post(actionUrl, formData)
+            .then(response => {
+                Swal.fire({
+                    title: 'Success',
+                    text: response.data.message,
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => location.reload()); // Reload categories
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: 'Error',
+                    text: error.response.data.message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            });
+    });
+
     // Handle Delete Category
-    $('.delete-category-btn').on('click', function() {
-        const id = $(this).data('id');
-        if (confirm('Are you sure you want to delete this category?')) {
-            $.ajax({
-                url: `/categories/${id}`,
-                method: 'DELETE',
-                data: { _token: '{{ csrf_token() }}' },
-                success: function(response) {
-                    alert(response.message);
-                    $(`#category-row-${id}`).remove(); // Remove row from table
-                },
-                error: function(xhr) {
-                    alert('Error: ' + xhr.responseJSON.message);
+    document.querySelectorAll('.delete-category-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const id = button.dataset.id;
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You won’t be able to revert this!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    axios.delete(`/categories/${id}`, {
+                        data: { _token: '{{ csrf_token() }}' }
+                    })
+                        .then(response => {
+                            Swal.fire({
+                                title: 'Deleted!',
+                                text: response.data.message,
+                                icon: 'success',
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                document.getElementById(`category-row-${id}`).remove(); // Remove row from table
+                            });
+                        })
+                        .catch(error => {
+                            Swal.fire({
+                                title: 'Error',
+                                text: error.response.data.message,
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        });
                 }
             });
-        }
+        });
     });
+
 </script>
 @endsection

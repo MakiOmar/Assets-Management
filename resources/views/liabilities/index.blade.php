@@ -119,79 +119,112 @@
 
 @push('js')
 <script>
-    jQuery(document).ready(function ($) {
-        // Handle Add Liability Form Submission
-        $('#add-liability-form').on('submit', function(e) {
-            e.preventDefault();
-            const formData = $(this).serialize();
-            $.ajax({
-                url: '{{ route('liabilities.store') }}',
-                method: 'POST',
-                data: formData,
-                success: function(response) {
-                    alert(response.message);
-                    location.reload(); // Reload liabilities
-                },
-                error: function(xhr) {
-                    alert('Error: ' + xhr.responseJSON.message);
-                }
+// Handle Add Liability Form Submission
+document.getElementById('add-liability-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+
+    axios.post('{{ route('liabilities.store') }}', formData)
+        .then(response => {
+            Swal.fire({
+                title: 'Success',
+                text: response.data.message,
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then(() => location.reload()); // Reload liabilities
+        })
+        .catch(error => {
+            Swal.fire({
+                title: 'Error',
+                text: error.response.data.message,
+                icon: 'error',
+                confirmButtonText: 'OK'
             });
         });
+});
 
-        // Handle Edit Button Click
-        $('.edit-liability-btn').on('click', function() {
-            const id = $(this).data('id');
-            const name = $(this).data('name');
-            const amount = $(this).data('amount');
-            const dueDate = $(this).data('due-date');
-            const type = $(this).data('type');
+// Handle Edit Button Click
+document.querySelectorAll('.edit-liability-btn').forEach(button => {
+    button.addEventListener('click', function () {
+        const id = button.dataset.id;
+        const name = button.dataset.name;
+        const amount = button.dataset.amount;
+        const dueDate = button.dataset.dueDate;
+        const type = button.dataset.type;
 
-            $('#edit-liability-id').val(id);
-            $('#edit-name').val(name);
-            $('#edit-amount').val(amount);
-            $('#edit-due-date').val(dueDate);
-            $('#edit-type').val(type);
+        document.getElementById('edit-liability-id').value = id;
+        document.getElementById('edit-name').value = name;
+        document.getElementById('edit-amount').value = amount;
+        document.getElementById('edit-due-date').value = dueDate;
+        document.getElementById('edit-type').value = type;
 
-            $('#edit-liability-form').attr('action', `/liabilities/${id}`);
-        });
+        document.getElementById('edit-liability-form').setAttribute('action', `/liabilities/${id}`);
+    });
+});
 
-        // Handle Edit Liability Form Submission
-        $('#edit-liability-form').on('submit', function(e) {
-            e.preventDefault();
-            const formData = $(this).serialize();
-            const actionUrl = $(this).attr('action');
-            $.ajax({
-                url: actionUrl,
-                method: 'POST',
-                data: formData,
-                success: function(response) {
-                    alert(response.message);
-                    location.reload(); // Reload liabilities
-                },
-                error: function(xhr) {
-                    alert('Error: ' + xhr.responseJSON.message);
-                }
+// Handle Edit Liability Form Submission
+document.getElementById('edit-liability-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const actionUrl = this.getAttribute('action');
+
+    axios.post(actionUrl, formData)
+        .then(response => {
+            Swal.fire({
+                title: 'Success',
+                text: response.data.message,
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then(() => location.reload()); // Reload liabilities
+        })
+        .catch(error => {
+            Swal.fire({
+                title: 'Error',
+                text: error.response.data.message,
+                icon: 'error',
+                confirmButtonText: 'OK'
             });
         });
+});
 
-        // Handle Delete Liability
-        $('.delete-liability-btn').on('click', function() {
-            const id = $(this).data('id');
-            if (confirm('Are you sure you want to delete this liability?')) {
-                $.ajax({
-                    url: `/liabilities/${id}`,
-                    method: 'DELETE',
-                    data: { _token: '{{ csrf_token() }}' },
-                    success: function(response) {
-                        alert(response.message);
-                        $(`#liability-row-${id}`).remove(); // Remove row from table
-                    },
-                    error: function(xhr) {
-                        alert('Error: ' + xhr.responseJSON.message);
-                    }
-                });
+// Handle Delete Liability
+document.querySelectorAll('.delete-liability-btn').forEach(button => {
+    button.addEventListener('click', function () {
+        const id = button.dataset.id;
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You won’t be able to revert this!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then(result => {
+            if (result.isConfirmed) {
+                axios.delete(`/liabilities/${id}`, {
+                    data: { _token: '{{ csrf_token() }}' }
+                })
+                    .then(response => {
+                        Swal.fire({
+                            title: 'Deleted!',
+                            text: response.data.message,
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            document.getElementById(`liability-row-${id}`).remove(); // Remove row from table
+                        });
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            title: 'Error',
+                            text: error.response.data.message,
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    });
             }
         });
     });
+});
+
 </script>
 @endpush

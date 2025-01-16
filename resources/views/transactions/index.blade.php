@@ -72,43 +72,68 @@
 @endsection
 @push('js')
 <script>
-    jQuery(document).ready(function ($) {
-        // Handle Add Transaction Form Submission
-        $('#add-transaction-form').on('submit', function(e) {
-            e.preventDefault();
-            const formData = $(this).serialize();
-            $.ajax({
-                url: '{{ route('transactions.store') }}',
-                method: 'POST',
-                data: formData,
-                success: function(response) {
-                    alert(response.message);
-                    location.reload(); // Reload transactions
-                },
-                error: function(xhr) {
-                    alert('Error: ' + xhr.responseJSON.message);
-                }
+// Handle Add Transaction Form Submission
+document.getElementById('add-transaction-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+
+    axios.post('{{ route('transactions.store') }}', formData)
+        .then(response => {
+            Swal.fire({
+                title: 'Success',
+                text: response.data.message,
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then(() => location.reload()); // Reload transactions
+        })
+        .catch(error => {
+            Swal.fire({
+                title: 'Error',
+                text: error.response.data.message,
+                icon: 'error',
+                confirmButtonText: 'OK'
             });
         });
+});
 
-        // Handle Delete Transaction
-        $('.delete-transaction-btn').on('click', function() {
-            const id = $(this).data('id');
-            if (confirm('Are you sure you want to delete this transaction?')) {
-                $.ajax({
-                    url: `/transactions/${id}`,
-                    method: 'DELETE',
-                    data: { _token: '{{ csrf_token() }}' },
-                    success: function(response) {
-                        alert(response.message);
-                        $(`#transaction-row-${id}`).remove(); // Remove row from table
-                    },
-                    error: function(xhr) {
-                        alert('Error: ' + xhr.responseJSON.message);
-                    }
-                });
+// Handle Delete Transaction
+document.querySelectorAll('.delete-transaction-btn').forEach(button => {
+    button.addEventListener('click', function () {
+        const id = button.dataset.id;
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You won’t be able to revert this!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then(result => {
+            if (result.isConfirmed) {
+                axios.delete(`/transactions/${id}`, {
+                    data: { _token: '{{ csrf_token() }}' }
+                })
+                    .then(response => {
+                        Swal.fire({
+                            title: 'Deleted!',
+                            text: response.data.message,
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            document.getElementById(`transaction-row-${id}`).remove(); // Remove row from table
+                        });
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            title: 'Error',
+                            text: error.response.data.message,
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    });
             }
         });
     });
+});
+
 </script> 
 @endpush
