@@ -365,11 +365,6 @@ return [
                 'route' => 'transactions.index',
                 'icon' => 'far fa-fw fa-list-alt',
             ],
-            [
-                'text' => 'Recent Transactions',
-                'url' => '#', // Dynamic user ID
-                'icon' => 'fas fa-fw fa-clock',
-            ],
         ],
         ],
 

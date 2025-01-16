@@ -49,4 +49,30 @@ class TransactionController extends Controller
         // HTTP Request: Redirect with success message
         return redirect()->route('transactions.index')->with('success', 'Transaction recorded successfully.');
     }
+    /**
+     * Remove the specified transaction from storage.
+     */
+    public function destroy(Request $request, Transaction $transaction)
+    {
+        // Check if the transaction belongs to the authenticated user
+        if ($transaction->user_id !== $request->user()->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized to delete this transaction.'
+            ], 403);
+        }
+
+        $transaction->delete();
+
+        // Handle XHR (AJAX) Request
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Transaction deleted successfully.'
+            ]);
+        }
+
+        // Handle Regular HTTP Request
+        return redirect()->route('transactions.index')->with('success', 'Transaction deleted successfully.');
+    }
 }
