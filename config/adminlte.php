@@ -330,11 +330,6 @@ return [
                 'icon' => 'far fa-fw fa-list-alt',
             ],
             [
-                'text' => 'Add Asset',
-                'route' => 'admin-assets.create',
-                'icon' => 'fas fa-fw fa-plus-circle',
-            ],
-            [
                 'text' => 'Total Value',
                 'url' => '#', // Dynamic user ID
                 'icon' => 'fas fa-fw fa-chart-bar',
@@ -351,11 +346,6 @@ return [
                 'text' => 'All Liabilities',
                 'route' => 'liabilities.index',
                 'icon' => 'far fa-fw fa-list-alt',
-            ],
-            [
-                'text' => 'Add Liability',
-                'route' => 'liabilities.create',
-                'icon' => 'fas fa-fw fa-plus-circle',
             ],
             [
                 'text' => 'Total Debt',
@@ -376,11 +366,6 @@ return [
                 'icon' => 'far fa-fw fa-list-alt',
             ],
             [
-                'text' => 'Add Transaction',
-                'route' => 'transactions.create',
-                'icon' => 'fas fa-fw fa-plus-circle',
-            ],
-            [
                 'text' => 'Recent Transactions',
                 'url' => '#', // Dynamic user ID
                 'icon' => 'fas fa-fw fa-clock',
@@ -397,11 +382,6 @@ return [
                 'text' => 'All Categories',
                 'route' => 'categories.index',
                 'icon' => 'far fa-fw fa-list-alt',
-            ],
-            [
-                'text' => 'Add Category',
-                'route' => 'categories.create',
-                'icon' => 'fas fa-fw fa-plus-circle',
             ],
         ],
         ],
