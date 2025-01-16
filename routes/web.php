@@ -30,20 +30,20 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('manage')->middleware('auth')->group(function () {
         Route::resource('assets', AssetController::class)->names([
-            'index' => 'admin-assets.index',
-            'create' => 'admin-assets.create',
-            'store' => 'admin-assets.store',
-            'show' => 'admin-assets.show',
-            'edit' => 'admin-assets.edit',
-            'update' => 'admin-assets.update',
-            'destroy' => 'admin-assets.destroy',
+            'index' => 'manage-assets.index',
+            'create' => 'manage-assets.create',
+            'store' => 'manage-assets.store',
+            'show' => 'manage-assets.show',
+            'edit' => 'manage-assets.edit',
+            'update' => 'manage-assets.update',
+            'destroy' => 'manage-assets.destroy',
         ]);
-    
-        Route::get('assets/total-value/{userId}', [AssetController::class, 'getTotalValue'])->name('admin-assets.totalValue');
-        Route::post('assets/{asset}/increase', [AssetController::class, 'increaseValue'])->name('admin-assets.increaseValue');
-        Route::post('assets/{asset}/decrease', [AssetController::class, 'decreaseValue'])->name('admin-assets.decreaseValue');
+
+        Route::get('assets/total-value/{userId}', [AssetController::class, 'getTotalValue'])->name('manage-assets.totalValue');
+        Route::post('assets/{asset}/increase', [AssetController::class, 'increaseValue'])->name('manage-assets.increaseValue');
+        Route::post('assets/{asset}/decrease', [AssetController::class, 'decreaseValue'])->name('manage-assets.decreaseValue');
     });
-    
+
     // Liability Routes
     Route::resource('liabilities', LiabilityController::class)->names([
         'index' => 'liabilities.index',

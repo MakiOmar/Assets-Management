@@ -326,7 +326,7 @@ return [
         'submenu' => [
             [
                 'text' => 'All Assets',
-                'route' => 'admin-assets.index',
+                'route' => 'manage-assets.index',
                 'icon' => 'far fa-fw fa-list-alt',
             ],
             [

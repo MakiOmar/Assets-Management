@@ -39,7 +39,7 @@ class AssetController extends Controller
         }
 
         // HTTP Request: Redirect
-        return redirect()->route('assets.index')->with('success', 'Asset added successfully.');
+        return redirect()->route('manage-assets.index')->with('success', 'Asset added successfully.');
     }
 
     public function update(Request $request, Asset $asset)
@@ -61,7 +61,7 @@ class AssetController extends Controller
         }
 
         // HTTP Request: Redirect
-        return redirect()->route('assets.index')->with('success', 'Asset updated successfully.');
+        return redirect()->route('manage-assets.index')->with('success', 'Asset updated successfully.');
     }
 
     public function destroy(Request $request, Asset $asset)
@@ -77,6 +77,6 @@ class AssetController extends Controller
         }
 
         // HTTP Request: Redirect
-        return redirect()->route('assets.index')->with('success', 'Asset deleted successfully.');
+        return redirect()->route('manage-assets.index')->with('success', 'Asset deleted successfully.');
     }
 }
