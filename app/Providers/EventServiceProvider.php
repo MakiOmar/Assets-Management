@@ -6,6 +6,8 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
+use App\Listeners\AssignDefaultRole;
+use App\Listeners\AssignCreateAssetsPermission;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -17,7 +19,8 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
-            \App\Listeners\AssignDefaultRole::class,
+            AssignDefaultRole::class,
+            AssignCreateAssetsPermission::class,
         ],
     ];
 
