@@ -10,13 +10,7 @@ class AssetController extends Controller
 {
     public function index(Request $request)
     {
-        $assets = Asset::where('user_id', $request->user()->id)->get();
-
-        // XHR Request: Return JSON
-        if ($request->isXhr()) {
-            return response()->json(['assets' => $assets]);
-        }
-
+        $assets = Asset::getAssets($request);
         // HTTP Request: Return View
         return view('assets.index', compact('assets'));
     }
