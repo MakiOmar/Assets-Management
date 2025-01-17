@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Asset;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class AssetController extends Controller
 {
@@ -30,7 +31,7 @@ class AssetController extends Controller
         $asset = Asset::create(array_merge($request->all(), ['user_id' => $request->user()->id]));
 
         // XHR Request: Return JSON
-        if ($request->ajax()) {
+        if ($request->ajax() || $request->header('HX-Request')) {
             return response()->json([
                 'success' => true,
                 'message' => 'Asset added successfully',
@@ -52,7 +53,7 @@ class AssetController extends Controller
         $asset->update($request->all());
 
         // XHR Request: Return JSON
-        if ($request->ajax()) {
+        if ($request->ajax() || $request->header('HX-Request') ) {
             return response()->json([
                 'success' => true,
                 'message' => 'Asset updated successfully',
@@ -69,7 +70,7 @@ class AssetController extends Controller
         $asset->delete();
 
         // XHR Request: Return JSON
-        if ($request->ajax()) {
+        if ($request->ajax() || $request->header('HX-Request')) {
             return response()->json([
                 'success' => true,
                 'message' => 'Asset deleted successfully',
