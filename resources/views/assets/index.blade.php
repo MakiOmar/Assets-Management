@@ -24,13 +24,22 @@
         </thead>
         <tbody id="assets-table-body">
             @foreach ($assets as $asset)
-                <tr id="asset-row-{{ $asset->id }}">
+                <tr id="asset-row-{{ $asset->id }}" hx-confirm>
                     <td>{{ $asset->name }}</td>
                     <td>{{ $asset->value }}</td>
                     <td>{{ $asset->type }}</td>
                     <td>
                         <button class="btn btn-warning btn-sm edit-asset-btn" data-id="{{ $asset->id }}" data-name="{{ $asset->name }}" data-value="{{ $asset->value }}" data-type="{{ $asset->type }}" data-bs-toggle="modal" data-bs-target="#editAssetModal">Edit</button>
-                        <button class="btn btn-danger btn-sm delete-asset-btn" data-id="{{ $asset->id }}">Delete</button>
+                        <button class="btn btn-danger btn-sm delete-asset-btn"
+                            hx-delete="/manage/assets/{{ $asset->id }}"
+                            hx-headers='{"X-CSRF-TOKEN": "{{ csrf_token() }}"}'
+                            hx-confirm="You won’t be able to revert this!"
+                            hx-indicator="#maglev-loading-indicator"
+                            hx-target="closest tr"
+                            hx-swap="outerHTML"
+                        >
+                        Delete
+                        </button>
                     </td>
                 </tr>
             @endforeach
@@ -41,7 +50,15 @@
 <!-- Add Asset Modal -->
 <div class="modal fade" id="addAssetModal" tabindex="-1" aria-labelledby="addAssetModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <form id="add-asset-form" method="POST" action="{{ route('manage-assets.store') }}">
+        <form 
+        id="add-asset-form" 
+        method="POST" 
+        action="{{ route('manage-assets.store') }}" 
+        hx-post="{{ route('manage-assets.store') }}" 
+        hx-swap="none"  
+        hx-indicator="#maglev-loading-indicator"
+        hx-no-swal = 'true'
+        >
             @csrf
             <div class="modal-content">
                 <div class="modal-header">
@@ -68,13 +85,21 @@
                 </div>
             </div>
         </form>
+        
     </div>
 </div>
 
 <!-- Edit Asset Modal -->
 <div class="modal fade" id="editAssetModal" tabindex="-1" aria-labelledby="editAssetModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <form id="edit-asset-form" method="POST">
+        <form id="edit-asset-form" 
+        method="POST" 
+        hx-patch="" 
+        hx-debug="true" 
+        hx-swap="none" 
+        hx-indicator="#maglev-loading-indicator"
+        hx-no-swal = 'true'
+        >
             @csrf
             @method('PATCH')
             <div class="modal-content">
@@ -109,34 +134,49 @@
 @push('js')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-    // Handle Add Asset Form Submission
-    const addAssetForm = document.getElementById('add-asset-form');
-    if (addAssetForm) {
-        addAssetForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const formData = new FormData(addAssetForm);
-            
-            axios.post('{{ route('manage-assets.store') }}', formData)
-                .then(response => {
+        document.addEventListener('htmx:afterRequest', (event) => {
+            var form = event.detail.requestConfig.triggeringEvent.target;
+            if (form && form.hasAttribute('hx-post') && form.getAttribute('id') === 'add-asset-form' ) {
+                if (event.detail.successful) {
                     Swal.fire({
                         title: 'Success',
-                        text: response.data.message,
+                        text: 'Asset added successfully!',
                         icon: 'success',
                         confirmButtonText: 'OK'
                     }).then(() => {
                         location.reload(); // Reload assets
                     });
-                })
-                .catch(error => {
+                } else {
                     Swal.fire({
                         title: 'Error',
-                        text: error.response.data.message,
+                        text: 'There was an issue adding the asset.',
                         icon: 'error',
                         confirmButtonText: 'OK'
                     });
-                });
+                }
+            }
+            if (form && form.hasAttribute('hx-post') && form.getAttribute('id') === 'edit-asset-form' ) {
+                
+                if (event.detail.successful) {
+                    Swal.fire({
+                        title: 'Success',
+                        text: 'Asset Edited successfully!',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        location.reload(); // Reload assets
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'There was an issue Editing the asset.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            }
         });
-    }
+
 
     // Handle Edit Button Click
     const editAssetButtons = document.querySelectorAll('.edit-asset-btn');
@@ -153,77 +193,8 @@
             document.getElementById('edit-type').value = type;
 
             document.getElementById('edit-asset-form').setAttribute('action', `/manage/assets/${id}`);
-        });
-    });
-
-    // Handle Edit Asset Form Submission
-    const editAssetForm = document.getElementById('edit-asset-form');
-    if (editAssetForm) {
-        editAssetForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const formData = new FormData(editAssetForm);
-            const actionUrl = editAssetForm.getAttribute('action');
-
-            axios.post(actionUrl, formData)
-                .then(response => {
-                    Swal.fire({
-                        title: 'Success',
-                        text: response.data.message,
-                        icon: 'success',
-                        confirmButtonText: 'OK'
-                    }).then(() => {
-                        location.reload(); // Reload assets
-                    });
-                })
-                .catch(error => {
-                    Swal.fire({
-                        title: 'Error',
-                        text: error.response.data.message,
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                });
-        });
-    }
-
-    // Handle Delete Asset
-    const deleteAssetButtons = document.querySelectorAll('.delete-asset-btn');
-    deleteAssetButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            const id = button.dataset.id;
-            Swal.fire({
-                title: 'Are you sure?',
-                text: 'You won’t be able to revert this!',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, delete it!',
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    axios.delete(`/manage/assets/${id}`, {
-                        data: { _token: '{{ csrf_token() }}' }
-                    })
-                        .then(response => {
-                            Swal.fire({
-                                title: 'Deleted!',
-                                text: response.data.message,
-                                icon: 'success',
-                                confirmButtonText: 'OK'
-                            }).then(() => {
-                                const assetRow = document.getElementById(`asset-row-${id}`);
-                                if (assetRow) assetRow.remove(); // Remove row from table
-                            });
-                        })
-                        .catch(error => {
-                            Swal.fire({
-                                title: 'Error',
-                                text: error.response.data.message,
-                                icon: 'error',
-                                confirmButtonText: 'OK'
-                            });
-                        });
-                }
-            });
+            document.getElementById('edit-asset-form').setAttribute('hx-patch', `/manage/assets/${id}`);
+            htmx.process(document.body);
         });
     });
 });
