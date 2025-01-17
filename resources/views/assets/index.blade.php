@@ -4,7 +4,9 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>Assets</h1>
+        @can('create', App\Models\Asset::class)
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAssetModal">Add Asset</button>
+        @endcan
     </div>
 
     @if (session('success'))
@@ -29,7 +31,10 @@
                     <td>{{ $asset->value }}</td>
                     <td>{{ $asset->type }}</td>
                     <td>
+                        @can('update', $asset)
                         <button class="btn btn-warning btn-sm edit-asset-btn" data-id="{{ $asset->id }}" data-name="{{ $asset->name }}" data-value="{{ $asset->value }}" data-type="{{ $asset->type }}" data-bs-toggle="modal" data-bs-target="#editAssetModal">Edit</button>
+                        @endcan
+                        @can('delete', $asset)
                         <button class="btn btn-danger btn-sm delete-asset-btn"
                             hx-delete="/manage/assets/{{ $asset->id }}"
                             hx-headers='{"X-CSRF-TOKEN": "{{ csrf_token() }}"}'
@@ -40,6 +45,7 @@
                         >
                         Delete
                         </button>
+                        @endcan
                     </td>
                 </tr>
             @endforeach
@@ -88,7 +94,6 @@
         
     </div>
 </div>
-
 <!-- Edit Asset Modal -->
 <div class="modal fade" id="editAssetModal" tabindex="-1" aria-labelledby="editAssetModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -130,6 +135,7 @@
         </form>
     </div>
 </div>
+
 @endsection
 @push('js')
 <script>
