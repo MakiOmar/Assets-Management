@@ -8,7 +8,48 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <style id="maglev-loading-indicator-css">
+        #maglev-loading-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            z-index: -1; /* Prevent blocking interactions */
+            transition: opacity 0.3s ease, visibility 0s 0.3s; /* Delays visibility after fade-out */
+        }
 
+        #maglev-loading-indicator.htmx-request {
+            opacity: 1;
+            visibility: visible;
+            z-index: 9999; /* Makes the overlay active during requests */
+            transition: opacity 0.3s ease; /* Instant visibility change */
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 6px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
     {{-- Custom Meta Tags --}}
     @yield('meta_tags')
 
@@ -113,7 +154,6 @@
             @default
                 @vite(['resources/js/app.js', 'resources/css/app.css'])
                 <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
-                <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
                 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
                 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
                 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
@@ -121,6 +161,7 @@
                 <script src="{{ asset('vendor/adminlte/dist/js/adminlte.min.js') }}"></script>
                 <script src="{{ asset('assets/js/sweetalert2.js') }}"></script>
                 <script src="{{ asset('assets/js/flatpickr.js') }}"></script>
+                <script src="{{ asset('assets/js/htmx.min.js') }}"></script>
         @endswitch
     @endif
 
@@ -139,6 +180,10 @@
     {{-- Custom Scripts --}}
     @yield('adminlte_js')
 
+    <!-- Loading Indicator -->
+    <div id="maglev-loading-indicator" hx-indicator>
+        <div class="spinner"></div>
+    </div>
 </body>
 
 </html>
