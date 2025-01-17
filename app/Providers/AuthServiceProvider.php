@@ -2,7 +2,8 @@
 
 namespace App\Providers;
 
-// use Illuminate\Support\Facades\Gate;
+use App\Models\Transaction;
+use App\Policies\TransactionPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -14,7 +15,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        //
+        Transaction::class => TransactionPolicy::class,
     ];
 
     /**
@@ -25,5 +26,6 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('access-dashboard', function ($user) {
             return $user->hasRole(['administrator', 'author', 'editor']);
         });
+        $this->registerPolicies();
     }
 }
