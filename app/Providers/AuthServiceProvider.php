@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Models\Transaction;
+use App\Models\Asset;
 use App\Policies\TransactionPolicy;
+use App\Policies\AssetPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -16,6 +18,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         Transaction::class => TransactionPolicy::class,
+        Asset::class => AssetPolicy::class,
     ];
 
     /**
