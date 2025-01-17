@@ -184,6 +184,27 @@
     <div id="maglev-loading-indicator" hx-indicator>
         <div class="spinner"></div>
     </div>
+    <script type="text/javascript">
+        document.addEventListener(
+            "htmx:confirm",
+            function(e) {
+                if (!e.detail.target.hasAttribute('hx-confirm') || e.detail.target.hasAttribute('hx-no-swal') ) return
+                e.preventDefault();
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: `${e.detail.question}`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, proceed!',
+                    cancelButtonText: 'Cancel'
+                }).then(function(result) {
+                    if (result.isConfirmed) e.detail.issueRequest(true) // use true to skip window.confirm
+                })
+            }
+        );
+    </script>
 </body>
 
 </html>
