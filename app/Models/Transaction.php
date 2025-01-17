@@ -37,4 +37,11 @@ class Transaction extends Model
     {
         return self::where('user_id', $userId)->orderBy('date', 'desc')->take($limit)->get();
     }
+
+    public static function getTransactionsByUser($userId, $perPage = 10)
+    {
+        return self::where('user_id', $userId)
+        ->orderBy('date', 'desc')
+        ->paginate($perPage);
+    }
 }
