@@ -7,21 +7,25 @@ use Illuminate\Http\Request;
 
 class TransactionController extends Controller
 {
-    /**
-     * Display a list of transactions.
-     */
+/**
+ * Display a list of transactions.
+ */
     public function index(Request $request)
     {
-        $transactions = Transaction::getRecentTransactionsByUser($request->user()->id);
+        // Check if the user is an admin
+        if ($request->user()->hasRole('administrator')) {
+            // Admin: Get all transactions with pagination (10 per page)
 
-        // XHR Request: Return JSON response
-        if ($request->ajax()) {
-            return response()->json(['transactions' => $transactions]);
+            $transactions = Transaction::orderBy('date', 'desc')->paginate(10);
+        } else {
+            // Non-admin: Get transactions only for the logged-in user with pagination (10 per page)
+            $transactions = Transaction::getTransactionsByUser($request->user()->id, 10);
         }
 
-        // HTTP Request: Return view
+        // Return the view with paginated transactions
         return view('transactions.index', compact('transactions'));
     }
+
 
     /**
      * Store a new transaction.
@@ -54,6 +58,8 @@ class TransactionController extends Controller
      */
     public function destroy(Request $request, Transaction $transaction)
     {
+         // Authorize the action
+         $this->authorize('delete', $transaction);
         // Check if the transaction belongs to the authenticated user
         if ($transaction->user_id !== $request->user()->id) {
             return response()->json([
