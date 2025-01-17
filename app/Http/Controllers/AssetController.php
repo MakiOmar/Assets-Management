@@ -13,7 +13,7 @@ class AssetController extends Controller
         $assets = Asset::where('user_id', $request->user()->id)->get();
 
         // XHR Request: Return JSON
-        if ($request->ajax()) {
+        if ($request->isXhr()) {
             return response()->json(['assets' => $assets]);
         }
 
@@ -31,7 +31,7 @@ class AssetController extends Controller
         $asset = Asset::create(array_merge($request->all(), ['user_id' => $request->user()->id]));
 
         // XHR Request: Return JSON
-        if ($request->ajax() || $request->header('HX-Request')) {
+        if ($request->isXhr()) {
             return response()->json([
                 'success' => true,
                 'message' => 'Asset added successfully',
@@ -53,7 +53,7 @@ class AssetController extends Controller
         $asset->update($request->all());
 
         // XHR Request: Return JSON
-        if ($request->ajax() || $request->header('HX-Request') ) {
+        if ($request->isXhr()) {
             return response()->json([
                 'success' => true,
                 'message' => 'Asset updated successfully',
@@ -70,11 +70,8 @@ class AssetController extends Controller
         $asset->delete();
 
         // XHR Request: Return JSON
-        if ($request->ajax() || $request->header('HX-Request')) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Asset deleted successfully',
-            ]);
+        if ($request->isXhr()) {
+            return ''; // No Content
         }
 
         // HTTP Request: Redirect
