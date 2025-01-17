@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Http\Request;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +20,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Request::macro('isHtmx', function () {
+            return $this->header('HX-Request') === 'true';
+        });
+
+        Request::macro('isXhr', function () {
+            return $this->ajax() || $this->header('HX-Request') === 'true';
+        });
     }
 }
