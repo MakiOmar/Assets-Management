@@ -29,12 +29,15 @@
                     <td>{{ $transaction->amount }}</td>
                     <td>{{ $transaction->date }}</td>
                     <td>
-                        <button class="btn btn-danger btn-sm delete-transaction-btn" data-id="{{ $transaction->id }}">Delete</button>
+                        @can('delete', $transaction)
+                            <button class="btn btn-danger btn-sm delete-transaction-btn" data-id="{{ $transaction->id }}">Delete</button>
+                        @endcan
                     </td>
                 </tr>
             @endforeach
         </tbody>
     </table>
+    {{ $transactions->links() }}
 </div>
 
 <!-- Add Transaction Modal -->
